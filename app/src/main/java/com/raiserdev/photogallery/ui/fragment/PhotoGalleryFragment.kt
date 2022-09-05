@@ -8,13 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.raiserdev.photogallery.api.FlickrApi
 import com.raiserdev.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.raiserdev.photogallery.model.PhotoRepository
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.create
 
 private const val TAG = "PhotoGalleryFragment"
 class PhotoGalleryFragment : Fragment() {
@@ -36,10 +32,14 @@ class PhotoGalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         viewLifecycleOwner.lifecycleScope.launch {
-            val response = PhotoRepository().fetchContents()
-            Log.d(TAG, "Response received: $response")
+            try {
+
+                val response = PhotoRepository().fetchPhotos()
+                Log.d(TAG, "Response received: $response")
+            }catch (e: Exception){
+                Log.d(TAG,"Failed to fetch gallery items $e")
+            }
         }
     }
 

@@ -8,6 +8,6 @@ interface FlickrApi {
     "&api_key=$API_KEY" +
     "&format=json" +
     "&nojsoncallback=1" +
-    "&extrass=url_s")
+    "&extras=url_s")
     suspend fun fetchPhotos(): FlickerResponse
 }

@@ -13,12 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.raiserdev.photogallery.R
-import com.raiserdev.photogallery.api.FlickrApi
 import com.raiserdev.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.raiserdev.photogallery.model.PhotoGalleryViewModel
-import com.raiserdev.photogallery.model.PhotoRepository
 import com.raiserdev.photogallery.ui.adapter.PhotoListAdapter
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 private const val TAG = "PhotoGalleryFragment"
@@ -30,9 +27,6 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
 
     private val photoGalleryViewModel : PhotoGalleryViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +64,8 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
         val searchItem: MenuItem = menu.findItem(R.id.menu_item_search)
         val searchView = searchItem.actionView as? SearchView
 
+        val clearSearch: MenuItem = menu.findItem(R.id.menu_item_clear)
+
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextChange(query: String?): Boolean {
                 photoGalleryViewModel.setQuery(query ?: "")
@@ -77,11 +73,11 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
             }
 
             override fun onQueryTextSubmit(query: String?): Boolean {
+                Log.d(TAG, "QueryTextChange: $query")
                 return false
             }
         })
 
-        val clearSearch: MenuItem = menu.findItem(R.id.menu_item_clear)
         clearSearch.setOnMenuItemClickListener {
             searchView?.setQuery("",false)
             true

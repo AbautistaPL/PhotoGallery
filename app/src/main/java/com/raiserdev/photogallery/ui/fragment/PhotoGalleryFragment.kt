@@ -12,20 +12,42 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.raiserdev.photogallery.PollWorker
 import com.raiserdev.photogallery.R
 import com.raiserdev.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.raiserdev.photogallery.model.PhotoGalleryViewModel
 import com.raiserdev.photogallery.ui.adapter.PhotoListAdapter
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 private const val TAG = "PhotoGalleryFragment"
 class PhotoGalleryFragment : Fragment(),MenuProvider {
     private var _binding: FragmentPhotoGalleryBinding?= null
-    private val binding get() = checkNotNull(_binding){
+    private val binding get() = checkNotNull(_binding)
+    {
         "Cannot access binding because it is null. Is the view visible?"
     }
 
+    private var searchView: SearchView?= null
     private val photoGalleryViewModel : PhotoGalleryViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+        val workRequest = OneTimeWorkRequest
+            .Builder(PollWorker::class.java)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(requireContext())
+            .enqueue(workRequest)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,9 +67,13 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                photoGalleryViewModel.galleryItems.collect{ items ->
+                /*photoGalleryViewModel.galleryItems.collect{ items ->
                     Log.d(TAG, "Response received : $items")
                     binding.photoGrid.adapter = PhotoListAdapter(items)
+                }*/
+                photoGalleryViewModel.uiState.collect{ state ->
+                    binding.photoGrid.adapter = PhotoListAdapter(state.images)
+                    searchView?.setQuery(state.query,false)
                 }
             }
         }
@@ -56,6 +82,7 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        searchView = null
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -87,5 +114,6 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return true
     }
+
 }
 

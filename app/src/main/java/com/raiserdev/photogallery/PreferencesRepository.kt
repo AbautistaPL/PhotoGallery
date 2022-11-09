@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-
 class PreferencesRepository private constructor(
     private val dataStore: DataStore<Preferences>
 ) {
@@ -16,7 +15,7 @@ class PreferencesRepository private constructor(
     companion object{
         private val SEARCH_QUERY_KEY = stringPreferencesKey("search_query")
         private val PREF_LAST_RESULT_ID = stringPreferencesKey("lastResultId")
-
+        private val PREF_IS_POLLING = booleanPreferencesKey("isPolling")
         private var INSTANCE: PreferencesRepository ?= null
         private const val SETTINGS = "settings"
 
@@ -50,6 +49,16 @@ class PreferencesRepository private constructor(
     suspend fun setLastResultId(lastResultId: String){
         dataStore.edit {
             it[PREF_LAST_RESULT_ID] = lastResultId
+        }
+    }
+
+    val isPolling : Flow<Boolean> = dataStore.data.map {
+        it[PREF_IS_POLLING] ?: false
+    }.distinctUntilChanged()
+
+    suspend fun setPolling(isPolling : Boolean){
+        dataStore.edit {
+            it[PREF_IS_POLLING] = isPolling
         }
     }
 }

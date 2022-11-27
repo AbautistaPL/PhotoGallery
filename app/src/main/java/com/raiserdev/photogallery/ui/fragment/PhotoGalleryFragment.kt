@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.work.*
 import com.raiserdev.photogallery.PollWorker
@@ -63,8 +64,13 @@ class PhotoGalleryFragment : Fragment(),MenuProvider {
                         state.images
                     ){
                         photoPageUri ->
-                        val intent = Intent(Intent.ACTION_VIEW,photoPageUri)
-                        startActivity(intent)
+                        //val intent = Intent(Intent.ACTION_VIEW,photoPageUri)
+                        //startActivity(intent)
+                        findNavController().navigate(
+                            PhotoGalleryFragmentDirections.showPhoto(
+                                photoPageUri
+                            )
+                        )
                     }
                     searchView?.setQuery(state.query,false)
                     updatePollingState(state.isPolling)

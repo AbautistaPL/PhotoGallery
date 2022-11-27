@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/photoGalleryFragment">
+
+    <fragment
+        android:id="@+id/photoGalleryFragment"
+        android:name="com.raiserdev.photogallery.ui.fragment.PhotoGalleryFragment"
+        android:label="PhotoGalleryFragment"
+        tools:layout="@layout/fragment_photo_gallery" >
+        <action
+            android:id="@+id/show_photo"
+            app:destination="@+id/photoPageFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/photoPageFragment"
+        android:name="com.raiserdev.photogallery.ui.fragment.PhotoPageFragment"
+        android:label="PhotoPageFragment"
+        tools:layout="@layout/fragment_photo_page">
+        <argument
+            android:name="photoPageUri"
+            app:argType="android.net.Uri"/>
+    </fragment>
+
+</navigation>
